@@ -46,6 +46,9 @@ packages:
     description:
       name: cupertino_icons
       sha256: ba631d1c7f7bef6b729a622b7b752645a2d076dba9976925b8f25725a30e1ee6
+
+      sha256: e35129dc44c9118cee2a5603506d823bab99c68393879edb440e0090d07586be
+ 725c08311b2d47fa6b310f43f0832622c03f0a8a
       url: "https://pub.dev"
     source: hosted
     version: "1.0.8"
@@ -67,6 +70,9 @@ packages:
     description:
       name: flutter_lints
       sha256: "5398f14efa795ffb7a33e9b6a08798b26a180edac4ad7db3f231e40f82ce11e1"
+
+      sha256: b543301ad291598523947dc534aaddc5aaad597b709d2426d3a0e0d44c5cb493
+ 725c08311b2d47fa6b310f43f0832622c03f0a8a
       url: "https://pub.dev"
     source: hosted
     version: "5.0.0"
@@ -104,6 +110,9 @@ packages:
     description:
       name: lints
       sha256: c35bb79562d980e9a453fc715854e1ed39e24e7d0297a880ef54e17f9874a9d7
+
+      sha256: a2c3d198cb5ea2e179926622d433331d8b58374ab8f29cdda6e863bd62fd369c
+ 725c08311b2d47fa6b310f43f0832622c03f0a8a
       url: "https://pub.dev"
     source: hosted
     version: "5.1.1"
@@ -155,6 +164,8 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.8"
+
+ 725c08311b2d47fa6b310f43f0832622c03f0a8a
   sky_engine:
     dependency: transitive
     description: flutter
@@ -173,6 +184,9 @@ packages:
     description:
       name: sqflite
       sha256: e2297b1da52f127bc7a3da11439985d9b536f75070f3325e62ada69a5c585d03
+
+      sha256: "51c09d414ca74b1cd4a5880d63763ebd2033a4fc6d921708c7c1e98c603735d4"
+ 725c08311b2d47fa6b310f43f0832622c03f0a8a
       url: "https://pub.dev"
     source: hosted
     version: "2.4.2"
@@ -189,6 +203,9 @@ packages:
     description:
       name: sqflite_common
       sha256: "84731e8bfd8303a3389903e01fb2141b6e59b5973cacbb0929021df08dddbe8b"
+
+      sha256: b504fc5b4576a05586a0bb99d9bcc0d37a78d9d5ed68b96c361d5d3a8e538275
+ 725c08311b2d47fa6b310f43f0832622c03f0a8a
       url: "https://pub.dev"
     source: hosted
     version: "2.5.5"
@@ -237,6 +254,9 @@ packages:
     description:
       name: synchronized
       sha256: "0669c70faae6270521ee4f05bffd2919892d42d1276e6c495be80174b6bc0ef6"
+
+      sha256: a7f0790927c0806ae0d5eb061c713748fa6070ef0037e391a2d53c3844c09dc2
+ 725c08311b2d47fa6b310f43f0832622c03f0a8a
       url: "https://pub.dev"
     source: hosted
     version: "3.3.1"
@@ -275,3 +295,7 @@ packages:
 sdks:
   dart: ">=3.7.0 <4.0.0"
   flutter: ">=3.24.0"
+
+  dart: ">=3.7.0-0 <4.0.0"
+  flutter: ">=3.18.0-18.0.pre.54"
+ 725c08311b2d47fa6b310f43f0832622c03f0a8a
