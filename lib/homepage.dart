@@ -91,7 +91,11 @@ class _HomePageState extends State<HomePage> {
                       // Close the bottom sheet
                       Navigator.of(context).pop();
                     },
-                    child: Text(id == null ? 'Create New' : 'Update'),
+                    child: Text(id == null ? 'Create New' : 'Update'), 
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all(const Color(0xFFFF7E20)),
+                      foregroundColor: MaterialStateProperty.all(Colors.white),
+                    ),
                   )
                 ],
               ),
@@ -125,21 +129,22 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Awie's Diary"),
+        title: const Text("Wafa's Diary"),
+        backgroundColor: const Color(0xFFFF7E20),
       ),
-      body: _isLoading
+      body: _isLoading 
           ? const Center(
               child: CircularProgressIndicator(),
             )
           : ListView.builder(
               itemCount: _diaries.length,
               itemBuilder: (context, index) => Card(
-                color: Colors.tealAccent,
+                color: const Color(0xFFFFCAA3),
                 margin: const EdgeInsets.all(10),
                 child: ListTile(
                     leading: CircleAvatar(
                               child: Image.asset('assets/images/happy.gif'),
-                              backgroundColor: Colors.tealAccent,
+                              backgroundColor: const Color(0xFFFFCAA3),
                     ),
                     title: Text(_diaries[index]['feeling']),
                     subtitle: Text(_diaries[index]['description'] + '\n\n'+ _diaries[index]['createdAt']),

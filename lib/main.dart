@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'homepage.dart';
 
 void main() {
@@ -15,7 +14,7 @@ class MyApp extends StatelessWidget {
         // Remove the debug banner
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
-          primarySwatch: Colors.teal,
+          colorSchemeSeed: const Color(0xFFFFCAA3),
         ),
         home: const HomePage());
   }
