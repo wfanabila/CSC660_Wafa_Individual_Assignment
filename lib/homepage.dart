@@ -93,7 +93,7 @@ class _HomePageState extends State<HomePage> {
                     },
                     child: Text(id == null ? 'Create New' : 'Update'), 
                     style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all(const Color(0xFFFF7E20)),
+                      backgroundColor: MaterialStateProperty.all(const Color(0xFF6296EE)),
                       foregroundColor: MaterialStateProperty.all(Colors.white),
                     ),
                   )
@@ -128,9 +128,11 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFECF1FA),
       appBar: AppBar(
         title: const Text("Wafa's Diary"),
-        backgroundColor: const Color(0xFFFF7E20),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
       ),
       body: _isLoading 
           ? const Center(
@@ -139,12 +141,12 @@ class _HomePageState extends State<HomePage> {
           : ListView.builder(
               itemCount: _diaries.length,
               itemBuilder: (context, index) => Card(
-                color: const Color(0xFFFFCAA3),
+                color: const Color(0xFF6296EE),
                 margin: const EdgeInsets.all(10),
                 child: ListTile(
                     leading: CircleAvatar(
                               child: Image.asset('assets/images/happy.gif'),
-                              backgroundColor: const Color(0xFFFFCAA3),
+                              backgroundColor: const Color(0xFF6296EE),
                     ),
                     title: Text(_diaries[index]['feeling']),
                     subtitle: Text(_diaries[index]['description'] + '\n\n'+ _diaries[index]['createdAt']),
