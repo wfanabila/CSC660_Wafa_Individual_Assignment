@@ -1,19 +1,47 @@
 import 'package:flutter/material.dart';
 import 'sql_helper.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'login.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'theme_provider.dart';
 
-class HomePage extends StatefulWidget {
+class HomePage extends HookConsumerWidget {
   const HomePage({Key? key}) : super(key: key);
 
   @override
-  _HomePageState createState() => _HomePageState();
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = ref.watch(appThemeStateNotifier);
+
+    return _HomePageBody(ref: ref, theme: theme);
+  }
 }
 
-class _HomePageState extends State<HomePage> {
-  // All diaries
-  List<Map<String, dynamic>> _diaries = [];
+class _HomePageBody extends StatefulWidget {
+  final WidgetRef ref;
+  final ThemeData theme;
 
+  const _HomePageBody({
+    required this.ref,
+    required this.theme,
+  });
+
+  @override
+  State<_HomePageBody> createState() => _HomePageBodyState();
+}
+
+class _HomePageBodyState extends State<_HomePageBody> {
+  List<Map<String, dynamic>> _diaries = [];
   bool _isLoading = true;
-  // This function is used to fetch all data from the database
+
+  final TextEditingController _feelingController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _refreshDiaries();
+  }
+
   void _refreshDiaries() async {
     final data = await SQLHelper.getDiaries();
     setState(() {
@@ -22,155 +50,137 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  @override
-  void initState() {
-    super.initState();
-    _refreshDiaries(); // Loading the diary when the app starts
+  Future<void> _addDiary() async {
+    await SQLHelper.createDiary(
+      _feelingController.text,
+      _descriptionController.text,
+    );
+    _refreshDiaries();
   }
 
-  final TextEditingController _feelingController = TextEditingController();
-  final TextEditingController _descriptionController = TextEditingController();
+  Future<void> _updateDiary(int id) async {
+    await SQLHelper.updateDiary(
+      id,
+      _feelingController.text,
+      _descriptionController.text,
+    );
+    _refreshDiaries();
+  }
 
-  // This function will be triggered when the floating button is pressed
-  // It will also be triggered when you want to update a diary
-  void _showForm(int? id) async {
+  Future<void> _deleteDiary(int id) async {
+    await SQLHelper.deleteDiary(id);
+    _refreshDiaries();
+  }
+
+  void _showForm(int? id) {
     if (id != null) {
-      // id == null -> create new diary
-      // id != null -> update an existing diary
-      final existingDiary =
-          _diaries.firstWhere((element) => element['id'] == id);
-      _feelingController.text = existingDiary['feeling'];
-      _descriptionController.text = existingDiary['description'];
+      final diary = _diaries.firstWhere((e) => e['id'] == id);
+      _feelingController.text = diary['feeling'];
+      _descriptionController.text = diary['description'];
     }
 
     showModalBottomSheet(
-        context: context,
-        elevation: 5,
-        isScrollControlled: true,
-        builder: (_) => Container(
-              padding: EdgeInsets.only(
-                top: 15,
-                left: 15,
-                right: 15,
-                // this will prevent the soft keyboard from covering the text fields
-                bottom: MediaQuery.of(context).viewInsets.bottom + 120,
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  TextField(
-                    controller: _feelingController,
-                    decoration: const InputDecoration(hintText: 'Feeling'),
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  TextField(
-                    controller: _descriptionController,
-                    decoration: const InputDecoration(hintText: 'Description'),
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  ElevatedButton(
-                    onPressed: () async {
-                      // Save new diary
-                      if (id == null) {
-                        await _addDiary();
-                      }
-
-                      if (id != null) {
-                        await _updateDiary(id);
-                      }
-
-                      // Clear the text fields
-                      _feelingController.text = '';
-                      _descriptionController.text = '';
-
-                      // Close the bottom sheet
-                      Navigator.of(context).pop();
-                    },
-                    child: Text(id == null ? 'Create New' : 'Update'), 
-                    style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all(const Color(0xFF6296EE)),
-                      foregroundColor: MaterialStateProperty.all(Colors.white),
-                    ),
-                  )
-                ],
-              ),
-            ));
-  }
-
-// Insert a new diary to the database
-  Future<void> _addDiary() async {
-    await SQLHelper.createDiary(
-        _feelingController.text, _descriptionController.text);
-    _refreshDiaries();
-  }
-
-  // Update an existing diary
-  Future<void> _updateDiary(int id) async {
-    await SQLHelper.updateDiary(
-        id, _feelingController.text, _descriptionController.text);
-    _refreshDiaries();
-  }
-
-  // Delete an item
-  Future<void> _deleteDiary(int id) async {
-    await SQLHelper.deleteDiary(id);
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-      content: Text('Successfully deleted a diary!'),
-    ));
-    _refreshDiaries();
+      context: context,
+      isScrollControlled: true,
+      builder: (_) => Padding(
+        padding: EdgeInsets.only(
+          top: 15,
+          left: 15,
+          right: 15,
+          bottom: MediaQuery.of(context).viewInsets.bottom + 120,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: _feelingController,
+              decoration: const InputDecoration(hintText: 'Feeling'),
+            ),
+            TextField(
+              controller: _descriptionController,
+              decoration: const InputDecoration(hintText: 'Description'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                if (id == null) {
+                  await _addDiary();
+                } else {
+                  await _updateDiary(id);
+                }
+                Navigator.pop(context);
+              },
+              child: Text(id == null ? 'Create' : 'Update'),
+            )
+          ],
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFECF1FA),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+
       appBar: AppBar(
         title: const Text("Wafa's Diary"),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
+        actions: [
+          IconButton(
+            icon: Icon(
+              widget.theme.brightness == Brightness.dark
+                  ? Icons.dark_mode
+                  : Icons.light_mode,
+            ),
+            onPressed: () {
+              widget.ref.read(appThemeStateNotifier.notifier).toggleTheme();
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () async {
+              await FirebaseAuth.instance.signOut();
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => Login()),
+              );
+            },
+          )
+        ],
       ),
-      body: _isLoading 
-          ? const Center(
-              child: CircularProgressIndicator(),
-            )
+
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
           : ListView.builder(
               itemCount: _diaries.length,
               itemBuilder: (context, index) => Card(
-                color: const Color(0xFF6296EE),
+                color: Theme.of(context).cardColor,
                 margin: const EdgeInsets.all(10),
                 child: ListTile(
-                    leading: CircleAvatar(
-                              child: Image.asset('assets/images/happy.gif'),
-                              backgroundColor: const Color(0xFF6296EE),
-                    ),
-                    title: Text(_diaries[index]['feeling']),
-                    subtitle: Text(_diaries[index]['description'] + '\n\n'+ _diaries[index]['createdAt']),
-                    trailing: SizedBox(
-                      width: 100,
-                      child: Row(
-                        children: [
-                          IconButton(
-                            icon: const Icon(Icons.edit),
-                            onPressed: () => _showForm(_diaries[index]['id']),
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.delete),
-                            onPressed: () =>
-                                _deleteDiary(_diaries[index]['id']),
-                          ),
-                        ],
-                      ),
-                    )),
+                  leading: const Icon(Icons.mood),
+                  title: Text(_diaries[index]['feeling']),
+                  subtitle: Text(
+                    "${_diaries[index]['description']}\n\n${_diaries[index]['createdAt']}",
+                  ),
+                  trailing: PopupMenuButton(
+                    onSelected: (value) {
+                      if (value == 'edit') {
+                        _showForm(_diaries[index]['id']);
+                      } else {
+                        _deleteDiary(_diaries[index]['id']);
+                      }
+                    },
+                    itemBuilder: (context) => const [
+                      PopupMenuItem(value: 'edit', child: Text('Edit')),
+                      PopupMenuItem(value: 'delete', child: Text('Delete')),
+                    ],
+                  ),
+                ),
               ),
             ),
+
       floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.add),
         onPressed: () => _showForm(null),
+        child: const Icon(Icons.add),
       ),
     );
   }

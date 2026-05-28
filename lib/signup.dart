@@ -10,17 +10,44 @@ class Signup extends StatefulWidget {
 
 class _SignupState extends State<Signup> {
 
+  bool isHiddenPassword = true;
+
   TextEditingController email = TextEditingController();
   TextEditingController password = TextEditingController();
 
-  signup()async{
-    await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email.text, password: password.text);
+  signup() async {
+  try {
+
+    await FirebaseAuth.instance
+        .createUserWithEmailAndPassword(
+      email: email.text.trim(),
+      password: password.text.trim(),
+    );
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("Account created successfully"),
+      ),
+    );
+
+  } on FirebaseAuthException catch (e) {
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(e.message ?? "Signup failed"),
+      ),
+    );
+
+    print(e.code);
+    print(e.message);
   }
+}
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text("Sign Up"),),
+      backgroundColor: const Color(0xFFECF1FA),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
@@ -32,7 +59,23 @@ class _SignupState extends State<Signup> {
             SizedBox(height: 20,),
             TextField(
               controller: password,
-              decoration: InputDecoration(hintText: "Enter Password"),
+              obscureText: isHiddenPassword,
+              decoration: InputDecoration(
+              hintText: "Enter Password",
+                
+              suffixIcon: IconButton(
+                icon: Icon(
+                  isHiddenPassword 
+                  ? Icons.visibility 
+                  : Icons.visibility_off,
+                ),
+                onPressed: () {
+                  setState(() {
+                    isHiddenPassword = !isHiddenPassword;
+                  });
+                  },
+                ),
+              ),
             ),
             SizedBox(height: 20,),
             ElevatedButton(onPressed: (()=>signup()), child: Text("Sign Up"))
